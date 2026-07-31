@@ -1,0 +1,7 @@
+import {createClient} from '@supabase/supabase-js';
+const db=()=>createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY);
+const ip=(r)=>r.headers.get('x-forwarded-for')?.split(',')[0]?.trim()||'unknown';
+const hash=async s=>{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')};
+export async function POST(r){try{const d=await r.json(),h=await hash(ip(r));const {data:old}=await db().from('submissions').select('id').eq('ip_hash',h).eq('ip_blocked',true).limit(1);if(old?.length)return Response.json({error:'تم إرسال استبيان بالفعل من هذا الاتصال.'},{status:429});const {error}=await db().from('submissions').insert({...d,ip_hash:h});if(error)throw error;return Response.json({ok:true})}catch(e){console.error('Submission failed:',e);return Response.json({error:'تعذر حفظ الإجابات.'},{status:500})}}
+export async function GET(r){if(r.headers.get('x-admin-password')!==process.env.ADMIN_PASSWORD)return new Response('Unauthorized',{status:401});const {data,error}=await db().from('submissions').select('*').order('created_at',{ascending:false});return Response.json(error?{error:error.message}:{data})}
+export async function PATCH(r){if(r.headers.get('x-admin-password')!==process.env.ADMIN_PASSWORD)return new Response('Unauthorized',{status:401});const {id,...changes}=await r.json();const {error}=await db().from('submissions').update(changes).eq('id',id);return Response.json(error?{error:error.message}:{ok:true})}

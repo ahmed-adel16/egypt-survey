@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/config.php';
-session_name('earn_survey_player'); session_start();
+start_project_session('earn_survey_player');
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['start_survey'])) {
   $name = trim($_POST['player_name'] ?? ''); $country = $_POST['country'] ?? '';
   if ($name !== '' && in_array($country, ['Egypt', 'USA', 'Morocco'], true)) {

@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/config.php'; session_name(SESSION_NAME); session_start();
+require __DIR__ . '/config.php'; start_project_session(SESSION_NAME);
 if (isset($_POST['logout'])) { session_destroy(); header('Location: admin.php'); exit; }
 if (!($_SESSION['admin'] ?? false)) {
   if ($_SERVER['REQUEST_METHOD']==='POST' && hash_equals(ADMIN_PASSWORD, $_POST['password'] ?? '')) { $_SESSION['admin']=true; header('Location: admin.php'); exit; }
