@@ -15,7 +15,7 @@ const oldQuestions = [
   "إيه أكتر حاجة بتخليك تحس بالأمان مع أي شخص؟",
   "لو تقدر تبعت رسالة مجهولة لأي شخص، هتكتب فيها إيه؟",
 ];
-const q = ['إيه أول إحساس بيكون عندك لما يبقى عندك يوم فاضي؟','إيه نوع الخروجة اللي بتحبها أكتر: لوحدك ولا مع صاحبك؟ وليه؟','إيه أهم صفة لازم تكون موجودة في الصاحب الحقيقي من وجهة نظرك؟','إيه الحاجة اللي ممكن تخليك تلغي خروجة كنت متحمس لها؟','إيه التصرف اللي يخليك تبعد عن شخص حتى لو كنت بتحبه؟','لو فيه حد عايز يصاحبك أو يقرب منك، وأنت مش مهتم أوي، هتتصرف معاه إزاي؟','إيه نوع المواقف اللي بتحس فيها إنك محتاج صاحب جنبك؟','إيه عادة صغيرة في يومك بتحس إنها بتفرق معاك؟','لو هتختار مكان هادي تقضي فيه يوم كامل، تتخيله فين؟','إيه نوع الكلام اللي بيخليك تحس إن اللي قدامك فاهمك؟','إيه موقف بسيط ممكن يثبت لك إن شخص قدامك جدع؟','لو عندك ساعتين زيادة كل يوم، هتستغلهم في إيه؟','إيه قرار صغير أخدته وفرق معاك بعد كده؟','إيه أكتر حاجة بتخليك تحس بالأمان مع صاحبك؟','لو تقدر تبعت رسالة مجهولة لصاحب قديم، هتكتب فيها إيه؟','إيه درس مهم اتعلمته من صداقة مرت عليك؟'];
+const q = ['إيه أول إحساس بيكون عندك لما يبقى عندك يوم فاضي؟', 'إيه نوع الخروجة اللي بتحبها أكتر: لوحدك ولا مع صاحبك؟ وليه؟', 'إيه أهم صفة لازم تكون موجودة في الصاحب الحقيقي من وجهة نظرك؟', 'إيه الحاجة اللي ممكن تخليك تلغي خروجة كنت متحمس لها؟', 'إيه التصرف اللي يخليك تبعد عن شخص حتى لو كنت بتحبه؟', 'لو فيه حد عايز يصاحبك أو يقرب منك، وأنت مش مهتم أوي، هتتصرف معاه إزاي؟', 'إيه نوع المواقف اللي بتحس فيها إنك محتاج صاحب جنبك؟', 'إيه عادة صغيرة في يومك بتحس إنها بتفرق معاك؟', 'لو هتختار مكان هادي تقضي فيه يوم كامل، تتخيله فين؟', 'إيه نوع الكلام اللي بيخليك تحس إن اللي قدامك فاهمك؟', 'إيه موقف بسيط ممكن يثبت لك إن شخص قدامك جدع؟', 'لو عندك ساعتين زيادة كل يوم، هتستغلهم في إيه؟', 'إيه قرار صغير أخدته وفرق معاك بعد كده؟', 'إيه أكتر حاجة بتخليك تحس بالأمان مع صاحبك؟', 'لو تقدر تبعت رسالة مجهولة لصاحب قديم، هتكتب فيها إيه؟', 'إيه درس مهم اتعلمته من صداقة مرت عليك؟'];
 const legacyQuestions = [
   'لو تقدر تتعلم مهارة واحدة فورًا من غير وقت أو مجهود، هتختار إيه؟ وإزاي هتستخدمها في حياتك؟',
   'لو حصل سوء تفاهم بينك وبين صاحب قريب منك، بتحب تحل الموضوع إزاي؟ وإيه اللي ممكن يصعّب الصلح؟',
@@ -38,8 +38,8 @@ export default function Page() {
     [phone, setPhone] = useState(""),
     [done, setDone] = useState([]),
     [message, setMessage] = useState("");
-  useEffect(() => { try { const d = JSON.parse(sessionStorage.getItem('survey-draft-v2') || '{}'); if (d.n) { setN(d.n); setCountry(d.country); setStarted(d.started); setOk(d.ok); setAnswers(d.answers || Array(10).fill('')); setPhone(d.phone || ''); setDone(d.done || []); } } catch {} }, []);
-  useEffect(() => { sessionStorage.setItem('survey-draft-v2', JSON.stringify({n,country,started,ok,answers,phone,done})); }, [n,country,started,ok,answers,phone,done]);
+  useEffect(() => { try { const d = JSON.parse(sessionStorage.getItem('survey-draft-v3') || '{}'); if (d.n) { setN(d.n); setCountry(d.country); setStarted(d.started); setOk(d.ok); setAnswers(d.answers || Array(10).fill('')); setPhone(d.phone || ''); setDone(d.done || []); } } catch { } }, []);
+  useEffect(() => { sessionStorage.setItem('survey-draft-v3', JSON.stringify({ n, country, started, ok, answers, phone, done })); }, [n, country, started, ok, answers, phone, done]);
   const total = done.reduce((x, i) => x + prices[i], 0);
   async function send(e) {
     e.preventDefault();
@@ -58,6 +58,11 @@ export default function Page() {
       }),
     });
     setMessage(r.ok ? "تم إرسال إجاباتك للمراجعة." : (await r.json()).error);
+  }
+  function endSession() {
+    sessionStorage.removeItem('survey-draft-v3');
+    setN(''); setCountry(''); setStarted(false); setOk(false);
+    setAnswers(Array(10).fill('')); setPhone(''); setDone([]); setMessage('');
   }
   if (message)
     return (
@@ -93,7 +98,12 @@ export default function Page() {
             >
               <option value="">اختر بلدك</option>
               <option>Egypt</option>
-              <option>USA</option>
+              <option>Iraq</option>
+              <option>Qatar</option>
+              <option>Saudi Arabia</option>
+              <option>Lebanon</option>
+              <option>Syria</option>
+              <option>Jordan</option>
               <option>Morocco</option>
             </select>
             <button className="submit">ابدأ</button>
@@ -110,6 +120,7 @@ export default function Page() {
             بنشكرك جدًا على تعاونك لنبني أفضل نموذج ذكاء اصطناعي مصري بجودة
             عالية.
           </p>
+          <button type="button" className="end-session" onClick={endSession}>إنهاء الجلسة</button>
         </header>
         <section className="notice">
           <div className="notice-mark">!</div>
@@ -135,6 +146,7 @@ export default function Page() {
         <p>
           بنشكرك جدًا على تعاونك لنبني أفضل نموذج ذكاء اصطناعي مصري بجودة عالية.
         </p>
+        <button type="button" className="end-session" onClick={endSession}>إنهاء الجلسة</button>
       </header>
       <aside className="earned-dock" aria-live="polite">
         <span className="coin">ج</span>

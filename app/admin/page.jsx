@@ -87,6 +87,35 @@ export default function Admin() {
     }
   }
 
+  async function deleteSubmission(submission) {
+    const confirmed = window.confirm(`حذف استبيان ${submission.name || 'هذا المستخدم'} نهائيًا؟ لا يمكن التراجع عن الحذف.`);
+    if (!confirmed) return;
+
+    const actionKey = `${submission.id}-delete`;
+    setNotice('');
+    setSaving(actionKey);
+
+    try {
+      const response = await fetch('/api/submissions', {
+        method: 'DELETE',
+        headers: headersFor(password),
+        body: JSON.stringify({ id: submission.id }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'تعذر حذف الاستبيان.');
+      }
+
+      setSubmissions((current) => current.filter((item) => item.id !== submission.id));
+      setNotice(`تم حذف استبيان ${submission.name || 'المستخدم'}.`);
+    } catch (deleteError) {
+      setNotice(deleteError.message || 'تعذر حذف الاستبيان.');
+    } finally {
+      setSaving('');
+    }
+  }
+
   if (!submissions) {
     return (
       <main className="login">
@@ -238,6 +267,15 @@ export default function Admin() {
                     {saving === `${submission.id}-paid`
                       ? 'جارٍ الحفظ…'
                       : isPaid ? 'تم تأكيد التحويل' : 'تأكيد التحويل'}
+                  </button>
+
+                  <button
+                    className="delete-submission"
+                    type="button"
+                    disabled={saving === `${submission.id}-delete`}
+                    onClick={() => deleteSubmission(submission)}
+                  >
+                    {saving === `${submission.id}-delete` ? 'جارٍ الحذف…' : 'حذف الاستبيان'}
                   </button>
                 </div>
               </article>
