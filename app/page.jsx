@@ -15,22 +15,34 @@ const oldQuestions = [
   "لو تقدر تبعت رسالة مجهولة لأي شخص، هتكتب فيها إيه؟",
 ];
 const q = ['إيه أول إحساس بيكون عندك لما يبقى عندك يوم فاضي؟','إيه نوع الخروجة اللي بتحبها أكتر: لوحدك ولا مع صاحبك؟ وليه؟','إيه أهم صفة لازم تكون موجودة في الصاحب الحقيقي من وجهة نظرك؟','إيه الحاجة اللي ممكن تخليك تلغي خروجة كنت متحمس لها؟','إيه التصرف اللي يخليك تبعد عن شخص حتى لو كنت بتحبه؟','لو فيه حد عايز يصاحبك أو يقرب منك، وأنت مش مهتم أوي، هتتصرف معاه إزاي؟','إيه نوع المواقف اللي بتحس فيها إنك محتاج صاحب جنبك؟','إيه عادة صغيرة في يومك بتحس إنها بتفرق معاك؟','لو هتختار مكان هادي تقضي فيه يوم كامل، تتخيله فين؟','إيه نوع الكلام اللي بيخليك تحس إن اللي قدامك فاهمك؟','إيه موقف بسيط ممكن يثبت لك إن شخص قدامك جدع؟','لو عندك ساعتين زيادة كل يوم، هتستغلهم في إيه؟','إيه قرار صغير أخدته وفرق معاك بعد كده؟','إيه أكتر حاجة بتخليك تحس بالأمان مع صاحبك؟','لو تقدر تبعت رسالة مجهولة لصاحب قديم، هتكتب فيها إيه؟','إيه درس مهم اتعلمته من صداقة مرت عليك؟'];
-const prices = [5,7,7,5,7,7,7,5,7,5,7,7,7,5,7,7];
+const questions = [
+  'لو تقدر تتعلم مهارة واحدة فورًا من غير وقت أو مجهود، هتختار إيه؟ وإزاي هتستخدمها في حياتك؟',
+  'لو حصل سوء تفاهم بينك وبين صاحب قريب منك، بتحب تحل الموضوع إزاي؟ وإيه اللي ممكن يصعّب الصلح؟',
+  'إيه حاجة بسيطة في يومك بتفرق جدًا في مزاجك، حتى لو الناس شايفاها عادية؟',
+  'احكي عن موقف خلاك تكتشف إن شخص معين صاحب جدع فعلًا. عمل إيه، وإيه اللي فرق معاك في الموقف؟',
+  'لو عندك أسبوع إجازة من كل مسؤولياتك، هتعمل فيه إيه من أول يوم لآخر يوم؟ وليه؟',
+  'إيه الصفات اللي لازم تكون موجودة في الصاحب الحقيقي عشان تقدر تثق فيه وتحكيله براحتك؟',
+  'احكي عن قرار صغير أخدته وغيّر طريقة تفكيرك أو أثّر في حياتك بشكل أكبر مما كنت متوقع.',
+  'لو فيه حد عايز يصاحبك أو يقرب منك، بس إنت مش مهتم أوي، هتتصرف معاه إزاي بشكل محترم؟ وليه؟',
+  'صف يوم خروجة مثالي بالنسبالك. تحب تقضيه لوحدك ولا مع صاحب قريب منك؟ وإيه اللي يخليه يوم حلو؟',
+  'إيه أهم درس اتعلمته من صداقة انتهت، أو اتغيرت، أو بقت أقوى مع الوقت؟',
+];
+const prices = Array(10).fill(10);
 export default function Page() {
   const [n, setN] = useState(""),
     [country, setCountry] = useState(""),
     [started, setStarted] = useState(false),
     [ok, setOk] = useState(false),
-    [answers, setAnswers] = useState(Array(16).fill("")),
+    [answers, setAnswers] = useState(Array(10).fill("")),
     [phone, setPhone] = useState(""),
     [done, setDone] = useState([]),
     [message, setMessage] = useState("");
-  useEffect(() => { try { const d = JSON.parse(sessionStorage.getItem('survey-draft') || '{}'); if (d.n) { setN(d.n); setCountry(d.country); setStarted(d.started); setOk(d.ok); setAnswers(d.answers || Array(16).fill('')); setPhone(d.phone || ''); setDone(d.done || []); } } catch {} }, []);
-  useEffect(() => { sessionStorage.setItem('survey-draft', JSON.stringify({n,country,started,ok,answers,phone,done})); }, [n,country,started,ok,answers,phone,done]);
+  useEffect(() => { try { const d = JSON.parse(sessionStorage.getItem('survey-draft-v2') || '{}'); if (d.n) { setN(d.n); setCountry(d.country); setStarted(d.started); setOk(d.ok); setAnswers(d.answers || Array(10).fill('')); setPhone(d.phone || ''); setDone(d.done || []); } } catch {} }, []);
+  useEffect(() => { sessionStorage.setItem('survey-draft-v2', JSON.stringify({n,country,started,ok,answers,phone,done})); }, [n,country,started,ok,answers,phone,done]);
   const total = done.reduce((x, i) => x + prices[i], 0);
   async function send(e) {
     e.preventDefault();
-    if (done.length !== q.length) return alert("أكمل كل الأسئلة واضغط خلصت.");
+    if (done.length !== questions.length) return alert("أكمل كل الأسئلة واضغط خلصت.");
     let r = await fetch("/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -124,7 +136,7 @@ export default function Page() {
         </p>
       </header>
       <form onSubmit={send}>
-        {q.map((x, i) => (
+        {questions.map((x, i) => (
           <article
             className={
               "question-card " + (done.includes(i) ? "is-complete" : "")
