@@ -135,6 +135,10 @@ export default function Page() {
           بنشكرك جدًا على تعاونك لنبني أفضل نموذج ذكاء اصطناعي مصري بجودة عالية.
         </p>
       </header>
+      <aside className="earned-dock" aria-live="polite">
+        <span className="coin">ج</span>
+        <div><small>رصيدك المحتمل</small><strong>{total} جنيه</strong></div>
+      </aside>
       <form onSubmit={send}>
         {questions.map((x, i) => (
           <article
@@ -179,8 +183,12 @@ export default function Page() {
               onChange={(e) => setPhone(e.target.value)}
             />
           </label>
+          <div className="cash-method">
+            <span className="vodafone-logo"><b></b>vodafone</span>
+            <div><strong>السحب عبر فودافون كاش</strong><small>سيتم التحويل إلى نفس الرقم المسجل بعد اعتماد الإجابات.</small></div>
+            <span className="selected">مُختار</span>
+          </div>
         </section>
-        <p>رصيدك المحتمل: {total} جنيه</p>
         <button className="submit">إرسال للمراجعة</button>
       </form>
       <footer className="site-footer">
