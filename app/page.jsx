@@ -28,7 +28,7 @@ export default function Page() {
   const total = done.reduce((x, i) => x + prices[i], 0);
   async function send(e) {
     e.preventDefault();
-    if (done.length !== 12) return alert("أكمل كل الأسئلة واضغط خلصت.");
+    if (done.length !== q.length) return alert("أكمل كل الأسئلة واضغط خلصت.");
     let r = await fetch("/api/submissions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
