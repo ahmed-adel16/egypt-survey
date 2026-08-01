@@ -167,7 +167,7 @@ export default function Page() {
             <label>{x}</label>
             <textarea
               required
-              minLength="20"
+              minLength="100"
               value={answers[i]}
               onChange={(e) => {
                 let a = [...answers];
@@ -176,10 +176,11 @@ export default function Page() {
                 setDone(done.filter((v) => v !== i));
               }}
             />
+            <p className="char-note">{answers[i].trim().length} / 100 حرف على الأقل</p>
             <button
               type="button"
               className="complete-answer"
-              disabled={answers[i].trim().length < 20}
+              disabled={answers[i].trim().length < 100}
               onClick={() => setDone([...new Set([...done, i])])}
             >
               خلصت
