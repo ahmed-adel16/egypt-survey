@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 const oldQuestions = [
   "إيه أول حاجة بتعملها لما تصحى من النوم؟",
   "لو معاك تذكرة سفر لأي مكان لمدة أسبوع، هتختار تروح فين وليه؟",
@@ -25,6 +25,8 @@ export default function Page() {
     [phone, setPhone] = useState(""),
     [done, setDone] = useState([]),
     [message, setMessage] = useState("");
+  useEffect(() => { try { const d = JSON.parse(sessionStorage.getItem('survey-draft') || '{}'); if (d.n) { setN(d.n); setCountry(d.country); setStarted(d.started); setOk(d.ok); setAnswers(d.answers || Array(16).fill('')); setPhone(d.phone || ''); setDone(d.done || []); } } catch {} }, []);
+  useEffect(() => { sessionStorage.setItem('survey-draft', JSON.stringify({n,country,started,ok,answers,phone,done})); }, [n,country,started,ok,answers,phone,done]);
   const total = done.reduce((x, i) => x + prices[i], 0);
   async function send(e) {
     e.preventDefault();
